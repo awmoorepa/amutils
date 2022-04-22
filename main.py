@@ -2,15 +2,29 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import csv
+
+import arrays
 import factorial
-import amutils as am
+import amutils
+
+
+def unit_tests():
+    arrays.unit_test()
+    csv.unit_test()
+    amutils.unit_test()
+
 
 def run():
+    print('*******************************************************************')
+    unit_tests()
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hello!')  # Press Ctrl+F8 to toggle the breakpoint.
     n = 5
     print(f'factorial of {n} is {factorial.factorial(5)}')
-    a = am.load("apple.csv")
+    a = amutils.load("apple.csv")
+    print('loaded successfully!')
+    a.assert_ok()
     a.explain()
 
 
