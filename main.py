@@ -22,10 +22,11 @@ def run():
     print(f'Hello!')  # Press Ctrl+F8 to toggle the breakpoint.
     n = 5
     print(f'factorial of {n} is {factorial.factorial(5)}')
-    a = amutils.load("apple.csv")
+    a = amutils.load("banana.csv")
     print('loaded successfully!')
     a.assert_ok()
     a.explain()
+    a.subcols('ascent','distance').explain()
 
 
 # Press the green button in the gutter to run the script.

@@ -152,3 +152,7 @@ def string_from_bool(b: bool) -> str:
         return "true"
     else:
         return "false"
+
+
+def string_from_bytes(bys: bytes)->str:
+    return bys.decode("utf-8")
