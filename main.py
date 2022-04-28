@@ -2,16 +2,16 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import csv
+import amcsv
 
-import arrays
+import amarrays
 import factorial
 import amutils
 
 
 def unit_tests():
-    arrays.unit_test()
-    csv.unit_test()
+    amarrays.unit_test()
+    amcsv.unit_test()
     amutils.unit_test()
 
 
@@ -26,7 +26,7 @@ def run():
     print('loaded successfully!')
     a.assert_ok()
     a.explain()
-    a.subcols('ascent','distance').explain()
+    a.subcols('ascent', 'distance').explain()
 
 
 # Press the green button in the gutter to run the script.

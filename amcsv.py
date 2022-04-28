@@ -1,10 +1,8 @@
 import enum
-from typing import Union, Tuple
+from typing import Union
 
-import arrays
-import basic
-from arrays import Strings, StringsArray
-from basic import Character, Errmess
+import amarrays
+from amutils import ambasic
 
 
 class Cstate(enum.Enum):
@@ -29,14 +27,14 @@ def trim_string(s: str) -> str:
                 n_spaces_since_non_space += 1
         else:
             is_started = True
-            result = result + basic.n_spaces(n_spaces_since_non_space) + c
+            result = result + ambasic.n_spaces(n_spaces_since_non_space) + c
             n_spaces_since_non_space = 0
 
     return result
 
 
 class CsvReader:
-    def __init__(self, state: Cstate, word: str, row: arrays.Strings, em: basic.Errmess):
+    def __init__(self, state: Cstate, word: str, row: amarrays.Strings, em: ambasic.Errmess):
         self.m_cstate = state
         self.m_word = word
         self.m_row = row
@@ -46,10 +44,10 @@ class CsvReader:
     def state(self) -> Cstate:
         return self.m_cstate
 
-    def row(self) -> arrays.Strings:
+    def row(self) -> amarrays.Strings:
         return self.m_row
 
-    def errmess(self) -> basic.Errmess:
+    def errmess(self) -> ambasic.Errmess:
         return self.m_errmess
 
     def is_finished(self) -> bool:
@@ -62,7 +60,7 @@ class CsvReader:
         self.m_cstate = next_state
         self.assert_ok()
 
-    def emit_char(self, c: basic.Character, next_state: Cstate):
+    def emit_char(self, c: ambasic.Character, next_state: Cstate):
         self.m_word += c.string()
         self.next(next_state)
 
@@ -80,7 +78,7 @@ class CsvReader:
 
     def emit_error(self, message: str):
         assert message != ""
-        self.m_errmess = basic.errmess_error(message)
+        self.m_errmess = ambasic.errmess_error(message)
         self.m_cstate = Cstate.error
 
     def assert_ok(self):
@@ -95,27 +93,27 @@ class CsvReader:
 
 
 def csv_reader_start() -> CsvReader:
-    return CsvReader(Cstate.begin_line, "", arrays.strings_empty(), basic.errmess_ok())
+    return CsvReader(Cstate.begin_line, "", amarrays.strings_empty(), ambasic.errmess_ok())
 
 
 class CsvRowOutput:
-    def __init__(self, em: basic.Errmess, row: arrays.Strings, file_has_ended: int):
+    def __init__(self, em: ambasic.Errmess, row: amarrays.Strings, file_has_ended: int):
         self.m_errmess = em
         self.m_row = row
         self.m_file_has_ended = file_has_ended
         self.assert_ok()
 
     def assert_ok(self):
-        assert isinstance(self.m_errmess, basic.Errmess)
+        assert isinstance(self.m_errmess, ambasic.Errmess)
         self.m_errmess.assert_ok()
-        assert isinstance(self.m_row, arrays.Strings)
+        assert isinstance(self.m_row, amarrays.Strings)
         self.m_row.assert_ok()
         assert isinstance(self.m_file_has_ended, bool)
 
     def is_error(self) -> bool:
         return self.errmess().is_error()
 
-    def errmess(self) -> basic.Errmess:
+    def errmess(self) -> ambasic.Errmess:
         return self.m_errmess
 
     def is_finished_successfully(self) -> bool:
@@ -124,32 +122,32 @@ class CsvRowOutput:
     def is_ok(self) -> bool:
         return self.errmess().is_ok()
 
-    def row(self) -> arrays.Strings:
+    def row(self) -> amarrays.Strings:
         return self.m_row
 
 
-def csv_row_output_type_errmess(em: basic.Errmess) -> CsvRowOutput:
-    return CsvRowOutput(em, arrays.strings_empty(), -77)
+def csv_row_output_type_errmess(em: ambasic.Errmess) -> CsvRowOutput:
+    return CsvRowOutput(em, amarrays.strings_empty(), -77)
 
 
-def csv_row_output_type_ok(row: arrays.Strings, file_has_ended: bool) -> CsvRowOutput:
-    return CsvRowOutput(basic.errmess_ok(), row, file_has_ended)
+def csv_row_output_type_ok(row: amarrays.Strings, file_has_ended: bool) -> CsvRowOutput:
+    return CsvRowOutput(ambasic.errmess_ok(), row, file_has_ended)
 
 
 def csv_row_output_file_ended_without_row() -> CsvRowOutput:
-    return csv_row_output_type_ok(arrays.strings_empty(), True)
+    return csv_row_output_type_ok(amarrays.strings_empty(), True)
 
 
-def csv_row_output_file_ended_with_row(row: arrays.Strings):
+def csv_row_output_file_ended_with_row(row: amarrays.Strings):
     return csv_row_output_type_ok(row, True)
 
 
-def csv_row_output_ok_and_file_not_ended(row: arrays.Strings):
+def csv_row_output_ok_and_file_not_ended(row: amarrays.Strings):
     return csv_row_output_type_ok(row, False)
 
 
 class StringStream:
-    def __init__(self, ss: arrays.Strings):
+    def __init__(self, ss: amarrays.Strings):
         self.m_strings = ss
         self.m_line_num = 0
         self.m_char_num = 0
@@ -157,7 +155,7 @@ class StringStream:
         self.assert_ok()
 
     def assert_ok(self):
-        assert isinstance(self.m_strings, arrays.Strings)
+        assert isinstance(self.m_strings, amarrays.Strings)
         self.m_strings.assert_ok()
         assert isinstance(self.m_line_num, int)
         assert isinstance(self.m_char_num, int)
@@ -170,7 +168,7 @@ class StringStream:
             assert self.m_line_num < self.m_strings.len()
             assert 0 <= self.m_char_num <= len(self.m_strings.string(self.m_line_num))
 
-    def next_character(self) -> Union[tuple[None, bool], tuple[Character, bool]]:
+    def next_character(self) -> Union[tuple[None, bool], tuple[ambasic.Character, bool]]:
         if self.m_end_of_file:
             return None, False
         else:
@@ -180,9 +178,9 @@ class StringStream:
                 self.m_char_num = 0
                 if self.m_line_num == self.m_strings.len():
                     self.m_end_of_file = True
-                return basic.character_newline(), True
+                return ambasic.character_newline(), True
             else:
-                result = basic.character_from_string(s, self.m_char_num)
+                result = ambasic.character_from_string(s, self.m_char_num)
                 self.m_char_num += 1
                 return result, True
 
@@ -190,7 +188,7 @@ class StringStream:
         return self.m_end_of_file
 
 
-def string_stream_from_strings_array(ss: arrays.Strings) -> StringStream:
+def string_stream_from_strings_array(ss: amarrays.Strings) -> StringStream:
     return StringStream(ss)
 
 
@@ -202,7 +200,7 @@ class NextRowStatus(enum.Enum):
 
 
 def next_csv_row_output(ss: StringStream) -> Union[
-        tuple[None, Errmess, NextRowStatus], tuple[Strings, Errmess, NextRowStatus]]:
+        tuple[None, ambasic.Errmess, NextRowStatus], tuple[amarrays.Strings, ambasic.Errmess, NextRowStatus]]:
     cs = csv_reader_start()
 
     while not cs.is_end_of_line():
@@ -269,29 +267,29 @@ def next_csv_row_output(ss: StringStream) -> Union[
                 cs.emit_char(c, Cstate.in_word)
 
         elif cs.state_is(Cstate.finish):
-            basic.my_error("We can't find ourselves here")
+            ambasic.my_error("We can't find ourselves here")
         elif cs.state_is(Cstate.end_line):
-            basic.my_error("We can't find ourselves here")
+            ambasic.my_error("We can't find ourselves here")
         elif cs.state_is(Cstate.error):
-            basic.my_error("We can't find ourselves here")
+            ambasic.my_error("We can't find ourselves here")
         else:
-            basic.my_error("Bad CSV state")
+            ambasic.my_error("Bad CSV state")
 
     if cs.state_is(Cstate.error):
         return None, cs.errmess(), NextRowStatus.error
     elif cs.state_is(Cstate.finish):
         if cs.row().len() == 0:
-            return None, basic.errmess_ok(), NextRowStatus.file_ended_without_extra_row
+            return None, ambasic.errmess_ok(), NextRowStatus.file_ended_without_extra_row
         else:
-            return cs.row(), basic.errmess_ok(), NextRowStatus.file_ended_with_extra_row
+            return cs.row(), ambasic.errmess_ok(), NextRowStatus.file_ended_with_extra_row
     else:
         assert cs.state_is(Cstate.end_line)
-        return cs.row(), basic.errmess_ok(), NextRowStatus.maybe_more_lines_to_come
+        return cs.row(), ambasic.errmess_ok(), NextRowStatus.maybe_more_lines_to_come
 
 
 def strings_array_from_string_stream_csv(sts: StringStream) -> Union[
-        tuple[None, Errmess], tuple[StringsArray, Errmess]]:
-    result = arrays.strings_array_empty()
+        tuple[None, ambasic.Errmess], tuple[amarrays.StringsArray, ambasic.Errmess]]:
+    result = amarrays.strings_array_empty()
 
     while True:
         row, em, nrs = next_csv_row_output(sts)
@@ -305,14 +303,14 @@ def strings_array_from_string_stream_csv(sts: StringStream) -> Union[
         elif nrs == NextRowStatus.file_ended_with_extra_row:
             assert em.is_ok()
             result.add(row)
-            return result, basic.errmess_ok()
+            return result, ambasic.errmess_ok()
         else:
             assert nrs == NextRowStatus.file_ended_without_extra_row
             assert em.is_ok()
-            return result, basic.errmess_ok()
+            return result, ambasic.errmess_ok()
 
 
-def strings_array_from_strings_csv(ss: arrays.Strings) -> Union[tuple[None, Errmess], tuple[StringsArray, Errmess]]:
+def strings_array_from_strings_csv(ss: amarrays.Strings) -> Union[tuple[None, ambasic.Errmess], tuple[amarrays.StringsArray, ambasic.Errmess]]:
     sts = string_stream_from_strings_array(ss)
     return strings_array_from_string_stream_csv(sts)
 
@@ -322,7 +320,7 @@ def csv_test_ok(s: str, r: int, c: int, check: str):
     print(f's = {s}')
     print(f'check = {check}')
 
-    ss = arrays.strings_from_lines_in_string(s)
+    ss = amarrays.strings_from_lines_in_string(s)
 
     print(f"***\nss = \n{ss.pretty_string()}***")
 
@@ -338,7 +336,7 @@ def csv_test_ok(s: str, r: int, c: int, check: str):
 def csv_test_bad(s: str):
     print('csv_test_bad(s)')
     print(f's = \n{s}')
-    ss = arrays.strings_from_lines_in_string(s)
+    ss = amarrays.strings_from_lines_in_string(s)
 
     print(f'ss = \n{ss.pretty_string()}')
 

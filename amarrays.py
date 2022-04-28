@@ -1,6 +1,6 @@
-from typing import Union, Tuple, Any
+from typing import Union, Any
 
-import basic
+import ambasic
 
 
 def is_list_of_bool(bs) -> bool:
@@ -37,7 +37,7 @@ class Bools:
         self.m_bools.append(b)
 
     def value_as_string(self, r: int) -> str:
-        return basic.string_from_bool(self.bool(r))
+        return ambasic.string_from_bool(self.bool(r))
 
     def bool(self, r: int) -> bool:
         assert 0 <= r < self.len()
@@ -104,7 +104,7 @@ class Namer:
         key = self.len()
         self.m_name_to_key[name] = key
         self.m_key_to_name.add(name)
-        if basic.is_power_of_two(self.len()):
+        if ambasic.is_power_of_two(self.len()):
             self.assert_ok()
 
     def key_from_name(self, name: str) -> Union[tuple[Any, bool], tuple[None, bool]]:
@@ -243,7 +243,7 @@ class Strings:
             else:
                 result.append(partial + '\n')
                 print(f'len(start) = {len(start)}')
-                partial = basic.n_spaces(len(start)) + " " + s
+                partial = ambasic.n_spaces(len(start)) + " " + s
                 print(f'partial = [{partial}]')
 
         result.append(partial + finish + '\n')
@@ -258,7 +258,7 @@ class Strings:
             assert n_pads >= 0
             if i < self.len() - 1:
                 n_pads += 1
-            result = result + s + basic.n_spaces(n_pads)
+            result = result + s + ambasic.n_spaces(n_pads)
         return result
 
     def concatenate(self) -> str:
@@ -329,11 +329,11 @@ def strings_array_empty() -> StringsArray:
     return StringsArray([])
 
 
-def strings_from_split(s: str, separator: basic.Character) -> Strings:
+def strings_from_split(s: str, separator: ambasic.Character) -> Strings:
     result = strings_empty()
     partial = ""
     for i in range(0, len(s)):
-        c = basic.character_from_string(s, i)
+        c = ambasic.character_from_string(s, i)
         if c.m_byte == separator.m_byte:
             result.add(partial)
             partial = ""
@@ -352,7 +352,7 @@ def strings_singleton(s: str) -> Strings:
 
 
 def strings_from_lines_in_string(s: str) -> Strings:
-    return strings_from_split(s, basic.character_create('\n'))
+    return strings_from_split(s, ambasic.character_create('\n'))
 
 
 def bools_empty() -> Bools:
@@ -368,7 +368,7 @@ def bools_singleton(b: bool) -> Bools:
 def bools_from_strings(ss: Strings) -> Union[tuple[None, bool], tuple[Bools, bool]]:
     result = bools_empty()
     for i in range(0, ss.len()):
-        b, ok = basic.bool_from_string(ss.string(i))
+        b, ok = ambasic.bool_from_string(ss.string(i))
         if ok:
             result.add(b)
         else:
@@ -384,7 +384,7 @@ def floats_empty():
 def floats_from_strings(ss: Strings) -> Union[tuple[None, bool], tuple[Floats, bool]]:
     result = floats_empty()
     for i in range(0, ss.len()):
-        f, ok = basic.float_from_string(ss.string(i))
+        f, ok = ambasic.float_from_string(ss.string(i))
         if ok:
             result.add(f)
         else:
@@ -422,7 +422,7 @@ def test_floats_ok(ls: list[str], total: float):
     ss = strings_create(ls)
     fs, ok = floats_from_strings(ss)
     assert ok
-    assert basic.loosely_equals(fs.sum(), total)
+    assert ambasic.loosely_equals(fs.sum(), total)
 
 
 def test_floats_bad(ls: list[str]):
